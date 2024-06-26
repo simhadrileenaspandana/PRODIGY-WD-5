@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        #weather-result {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #weather-info {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <form id="location-form">
+            <input type="text" id="location-input" placeholder="Enter a location" required>
+            <button type="submit">Get Weather</button>
+        </form>
+        <div id="weather-result">
+            <h2>Weather Details</h2>
+            <div id="weather-info"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('location-form');
+            const locationInput = document.getElementById('location-input');
+            const weatherResult = document.getElementById('weather-result');
+            const weatherInfo = document.getElementById('weather-info');
+        
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const location = locationInput.value;
+                getWeather(location);
+            });
+        
+            function getWeather(location) {
+                const apiKey = 'your_api_key'; // Replace with your actual API key
+                const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${apiKey}`;
+        
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cod === 200) {
+                            const weatherDetails = `
+                                <p><strong>Location:</strong> ${data.name}, ${data.sys.country}</p>
+                                <p><strong>Temperature:</strong> ${data.main.temp} °C</p>
+                                <p><strong>Weather:</strong> ${data.weather[0].description}</p>
+                                <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+                                <p><strong>Wind Speed:</strong> ${data.wind.speed} m/s</p>
+                            `;
+                            weatherInfo.innerHTML = weatherDetails;
+                            weatherResult.style.display = 'block';
+                        } else {
+                            weatherInfo.innerHTML = `<p>${data.message}</p>`;
+                            weatherResult.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        weatherInfo.innerHTML = `<p>Error fetching weather data. Please try again.</p>`;
+                        weatherResult.style.display = 'block';
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
